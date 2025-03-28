@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { FaPlay, FaPause, FaStepForward, FaStepBackward, FaVolumeUp, FaHeart, FaMusic, FaBars } from "react-icons/fa";
+import { FaPlay, FaPause, FaStepForward, FaStepBackward, FaVolumeUp, FaHeart, FaMusic, FaBars, FaUpload } from "react-icons/fa";
 import Library from "./Library";
 import Favorites from "./Favorites";
 import Playlist from "./Playlist";
@@ -11,15 +11,16 @@ export default function MusicPlayer() {
   const [volume, setVolume] = useState(1);
   const [activeTab, setActiveTab] = useState("trending");
   const audioRef = useRef(null);
+  const fileInputRef = useRef(null); // Reference for hidden file input
 
-  // Load music files from local storage
+  // Handle file upload
   const handleFileUpload = (event) => {
     const files = event.target.files;
     const songList = Array.from(files).map((file) => ({
       name: file.name,
       url: URL.createObjectURL(file),
     }));
-    setSongs(songList);
+    setSongs([...songs, ...songList]); // Append new songs to the list
   };
 
   // Play selected song
@@ -67,15 +68,27 @@ export default function MusicPlayer() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-black text-white p-6">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-black text-white p-6">
       <h1 className="text-3xl font-bold mb-4">Music Player</h1>
+
+      {/* Upload button */}
+      <button
+        onClick={() => fileInputRef.current.click()}
+        className="mb-4 bg-blue-500 hover:bg-blue-400 text-white p-2 rounded flex items-center gap-2"
+      >
+        <FaUpload /> Upload Songs
+      </button>
+      
+      {/* Hidden file input */}
       <input
         type="file"
         accept="audio/*"
         multiple
         onChange={handleFileUpload}
-        className="mb-4 bg-gray-800 text-white p-2 rounded hidden"
+        ref={fileInputRef}
+        className="hidden"
       />
+
       <div className="w-full max-w-md bg-gray-900 bg-opacity-80 backdrop-blur-md p-6 rounded-2xl shadow-lg relative">
         <div className="flex justify-between items-center mb-6">
           <button onClick={() => setActiveTab("trending")} className={`${activeTab === "trending" ? "text-blue-400" : "text-gray-400"} text-xl`}>
